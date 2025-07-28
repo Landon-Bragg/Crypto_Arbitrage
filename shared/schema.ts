@@ -39,8 +39,8 @@ export type ExchangePrice = typeof exchangePrices.$inferSelect;
 
 // Frontend types for API responses
 export const filterArbitrageSchema = z.object({
-  coin: z.enum(["all", "BTC", "ETH"]).default("all"),
-  minSpread: z.number().min(0).default(0.5),
+  coin: z.enum(["all", "BTC", "ETH", "ADA", "SOL", "DOT"]).default("all"),
+  minSpread: z.number().min(0).default(0.1),
 });
 
 export type FilterArbitrageParams = z.infer<typeof filterArbitrageSchema>;

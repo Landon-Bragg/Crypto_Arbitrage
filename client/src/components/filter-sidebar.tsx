@@ -50,6 +50,9 @@ export function FilterSidebar({
                 <SelectItem value="all">All Coins</SelectItem>
                 <SelectItem value="BTC">Bitcoin (BTC)</SelectItem>
                 <SelectItem value="ETH">Ethereum (ETH)</SelectItem>
+                <SelectItem value="ADA">Cardano (ADA)</SelectItem>
+                <SelectItem value="SOL">Solana (SOL)</SelectItem>
+                <SelectItem value="DOT">Polkadot (DOT)</SelectItem>
               </SelectContent>
             </Select>
           </div>
@@ -93,6 +96,24 @@ export function FilterSidebar({
                   className="border-slate-600 text-emerald-500"
                 />
                 <Label htmlFor="coinbase" className="text-sm text-slate-300">Coinbase</Label>
+              </div>
+              <div className="flex items-center space-x-2">
+                <Checkbox 
+                  id="binance" 
+                  checked={true} 
+                  disabled
+                  className="border-slate-600 text-emerald-500"
+                />
+                <Label htmlFor="binance" className="text-sm text-slate-300">Binance US</Label>
+              </div>
+              <div className="flex items-center space-x-2">
+                <Checkbox 
+                  id="gemini" 
+                  checked={true} 
+                  disabled
+                  className="border-slate-600 text-emerald-500"
+                />
+                <Label htmlFor="gemini" className="text-sm text-slate-300">Gemini</Label>
               </div>
             </div>
           </div>

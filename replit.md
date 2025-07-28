@@ -2,7 +2,7 @@
 
 ## Overview
 
-This is a cryptocurrency arbitrage monitoring application built with React frontend and Express.js backend. The system tracks price differences between cryptocurrency exchanges (Kraken and Coinbase) for Bitcoin and Ethereum, identifying arbitrage opportunities where the same asset has different prices across exchanges.
+This is a cryptocurrency arbitrage monitoring application built with React frontend and Express.js backend. The system tracks price differences between cryptocurrency exchanges (Kraken, Coinbase, Binance US, and Gemini) for multiple cryptocurrencies (Bitcoin, Ethereum, Cardano, Solana, and Polkadot), identifying arbitrage opportunities where the same asset has different prices across exchanges.
 
 ## User Preferences
 
@@ -28,28 +28,29 @@ Preferred communication style: Simple, everyday language.
 ## Key Components
 
 ### Core Services
-- **Exchange Service** (`server/services/exchangeService.ts`): Handles fetching prices from Kraken and Coinbase APIs, calculates arbitrage opportunities
+- **Exchange Service** (`server/services/exchangeService.ts`): Handles fetching prices from Kraken, Coinbase, Binance US, and Gemini APIs, calculates arbitrage opportunities across all exchange pairs
 - **Storage Interface** (`server/storage.ts`): Abstracts data persistence with current in-memory implementation and interface ready for database integration
 - **Route Handler** (`server/routes.ts`): Defines API endpoints for retrieving arbitrage opportunities, latest prices, and manual price updates
 
 ### Frontend Components
-- **Arbitrage Table**: Displays opportunities with coin icons, exchange badges, pricing data, and spread percentages
-- **Filter Sidebar**: Provides filtering by cryptocurrency type and minimum spread threshold
-- **Alert System**: Real-time notifications for new arbitrage opportunities
+- **Arbitrage Table**: Displays opportunities with coin icons, exchange badges, pricing data, and spread percentages for all supported currencies
+- **Live Prices Panel**: Real-time display of current prices from all exchanges, grouped by cryptocurrency with spread calculations
+- **Filter Sidebar**: Provides filtering by cryptocurrency type (BTC, ETH, ADA, SOL, DOT) and minimum spread threshold
+- **Alert System**: Real-time notifications for new arbitrage opportunities above configured thresholds
 - **Auto-refresh**: Configurable automatic data refreshing every 15 seconds
 
 ### Data Models
-- **Arbitrage Opportunities**: Tracks buy/sell exchanges, prices, spreads, and timestamps
-- **Exchange Prices**: Stores latest price data from each exchange for each supported coin
+- **Arbitrage Opportunities**: Tracks buy/sell exchanges, prices, spreads, and timestamps across all supported exchange pairs
+- **Exchange Prices**: Stores latest price data from each exchange for each supported coin (5 cryptocurrencies, 4 exchanges)
 - **Statistics**: Aggregated metrics about active opportunities and highest spreads
 
 ## Data Flow
 
-1. **Price Collection**: Exchange service periodically fetches prices from Kraken and Coinbase APIs
-2. **Opportunity Detection**: System compares prices across exchanges to identify arbitrage opportunities
+1. **Price Collection**: Exchange service periodically fetches prices from Kraken, Coinbase, Binance US, and Gemini APIs
+2. **Opportunity Detection**: System compares prices across all possible exchange pairs to identify arbitrage opportunities
 3. **Data Storage**: Opportunities and prices stored in memory with cleanup of old data
 4. **API Exposure**: REST endpoints serve filtered arbitrage data to frontend
-5. **Real-time Updates**: Frontend polls API every 15 seconds for latest opportunities
+5. **Real-time Updates**: Frontend polls API every 15 seconds for latest opportunities and live prices
 6. **User Interaction**: Filtering and alert preferences modify data presentation
 
 ## External Dependencies

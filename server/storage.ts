@@ -55,10 +55,15 @@ export class MemStorage implements IStorage {
   async clearOldArbitrageOpportunities(): Promise<void> {
     const fiveMinutesAgo = new Date(Date.now() - 5 * 60 * 1000);
     
+    const entriesToDelete: string[] = [];
     for (const [id, opportunity] of this.arbitrageOpportunities.entries()) {
       if (new Date(opportunity.timestamp) < fiveMinutesAgo) {
-        this.arbitrageOpportunities.delete(id);
+        entriesToDelete.push(id);
       }
+    }
+    
+    for (const id of entriesToDelete) {
+      this.arbitrageOpportunities.delete(id);
     }
   }
 

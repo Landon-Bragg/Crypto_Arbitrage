@@ -3,12 +3,13 @@ import { useQuery } from "@tanstack/react-query";
 import { ArbitrageTable } from "@/components/arbitrage-table";
 import { FilterSidebar } from "@/components/filter-sidebar";
 import { AlertNotification } from "@/components/alert-notification";
+import { LivePrices } from "@/components/live-prices";
 import { ArbitrageOpportunity, Statistics } from "@shared/schema";
 import { ChartLine } from "lucide-react";
 
 export default function Home() {
   const [selectedCoin, setSelectedCoin] = useState<string>("all");
-  const [minSpread, setMinSpread] = useState<number>(0.5);
+  const [minSpread, setMinSpread] = useState<number>(0.1);
   const [alertsEnabled, setAlertsEnabled] = useState<boolean>(true);
   const [autoRefreshEnabled, setAutoRefreshEnabled] = useState<boolean>(true);
   const [showAlert, setShowAlert] = useState<boolean>(false);
@@ -134,8 +135,12 @@ export default function Home() {
             />
           </div>
 
-          {/* Arbitrage Table */}
-          <div className="lg:col-span-3">
+          {/* Main Content Area */}
+          <div className="lg:col-span-3 space-y-6">
+            {/* Live Prices Panel */}
+            <LivePrices />
+            
+            {/* Arbitrage Table */}
             <ArbitrageTable
               opportunities={opportunities}
               isLoading={isLoadingOpportunities}

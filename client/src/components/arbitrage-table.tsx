@@ -27,8 +27,14 @@ export function ArbitrageTable({
         return <SiBitcoin className="text-orange-500 text-lg" />;
       case 'ETH':
         return <SiEthereum className="text-blue-500 text-lg" />;
+      case 'ADA':
+        return <div className="w-4 h-4 bg-blue-600 rounded-full"></div>;
+      case 'SOL':
+        return <div className="w-4 h-4 bg-purple-500 rounded-full"></div>;
+      case 'DOT':
+        return <div className="w-4 h-4 bg-pink-500 rounded-full"></div>;
       default:
-        return null;
+        return <div className="w-4 h-4 bg-gray-500 rounded-full"></div>;
     }
   };
 
@@ -38,6 +44,12 @@ export function ArbitrageTable({
         return 'Bitcoin';
       case 'ETH':
         return 'Ethereum';
+      case 'ADA':
+        return 'Cardano';
+      case 'SOL':
+        return 'Solana';
+      case 'DOT':
+        return 'Polkadot';
       default:
         return coin;
     }
@@ -46,11 +58,15 @@ export function ArbitrageTable({
   const getExchangeBadgeColor = (exchange: string) => {
     switch (exchange) {
       case 'Kraken':
-        return 'bg-blue-100 text-blue-800';
+        return 'bg-blue-100 text-blue-800 dark:bg-blue-900 dark:text-blue-200';
       case 'Coinbase':
-        return 'bg-purple-100 text-purple-800';
+        return 'bg-purple-100 text-purple-800 dark:bg-purple-900 dark:text-purple-200';
+      case 'Binance':
+        return 'bg-yellow-100 text-yellow-800 dark:bg-yellow-900 dark:text-yellow-200';
+      case 'Gemini':
+        return 'bg-green-100 text-green-800 dark:bg-green-900 dark:text-green-200';
       default:
-        return 'bg-gray-100 text-gray-800';
+        return 'bg-gray-100 text-gray-800 dark:bg-gray-700 dark:text-gray-200';
     }
   };
 
