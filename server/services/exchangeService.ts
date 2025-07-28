@@ -75,14 +75,33 @@ class ExchangeService {
       kraken: 'DOTUSD',
       coinbase: 'DOT-USD',
       binance: 'DOTUSDT'
+    },
+    'LINK': {
+      kraken: 'LINKUSD',
+      coinbase: 'LINK-USD',
+      binance: 'LINKUSDT'
+    },
+    'MATIC': {
+      coinbase: 'MATIC-USD',
+      binance: 'MATICUSDT'
     }
   } as const;
 
   async fetchKrakenPrices(): Promise<void> {
     try {
-      const pairs = Object.values(this.COIN_PAIRS).map(p => p.kraken).join(',');
+      // Filter out coins that don't have Kraken pairs
+      const krakenPairs = Object.entries(this.COIN_PAIRS)
+        .filter(([coin, pairs]) => 'kraken' in pairs)
+        .map(([coin, pairs]) => (pairs as any).kraken)
+        .join(',');
+      
+      if (!krakenPairs) {
+        console.log('No Kraken pairs available to fetch');
+        return;
+      }
+
       const response = await axios.get<KrakenTickerResponse>(
-        `${this.KRAKEN_BASE_URL}/Ticker?pair=${pairs}`,
+        `${this.KRAKEN_BASE_URL}/Ticker?pair=${krakenPairs}`,
         { timeout: 10000 }
       );
 
@@ -91,15 +110,17 @@ class ExchangeService {
       }
 
       for (const [coin, pairs] of Object.entries(this.COIN_PAIRS)) {
-        const tickerData = response.data.result[pairs.kraken];
-        if (tickerData && tickerData.c && tickerData.c[0]) {
-          const price = parseFloat(tickerData.c[0]);
-          
-          await storage.createExchangePrice({
-            exchange: 'Kraken',
-            coin,
-            price: price.toString(),
-          });
+        if ('kraken' in pairs) {
+          const tickerData = response.data.result[(pairs as any).kraken];
+          if (tickerData && tickerData.c && tickerData.c[0]) {
+            const price = parseFloat(tickerData.c[0]);
+            
+            await storage.createExchangePrice({
+              exchange: 'Kraken',
+              coin,
+              price: price.toString(),
+            });
+          }
         }
       }
     } catch (error) {

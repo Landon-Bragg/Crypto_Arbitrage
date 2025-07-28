@@ -33,6 +33,10 @@ export function ArbitrageTable({
         return <div className="w-4 h-4 bg-purple-500 rounded-full"></div>;
       case 'DOT':
         return <div className="w-4 h-4 bg-pink-500 rounded-full"></div>;
+      case 'LINK':
+        return <div className="w-4 h-4 bg-blue-400 rounded-full"></div>;
+      case 'MATIC':
+        return <div className="w-4 h-4 bg-purple-400 rounded-full"></div>;
       default:
         return <div className="w-4 h-4 bg-gray-500 rounded-full"></div>;
     }
@@ -50,6 +54,10 @@ export function ArbitrageTable({
         return 'Solana';
       case 'DOT':
         return 'Polkadot';
+      case 'LINK':
+        return 'Chainlink';
+      case 'MATIC':
+        return 'Polygon';
       default:
         return coin;
     }
@@ -81,8 +89,8 @@ export function ArbitrageTable({
     return new Intl.NumberFormat('en-US', {
       style: 'currency',
       currency: 'USD',
-      minimumFractionDigits: 2,
-      maximumFractionDigits: 2,
+      minimumFractionDigits: 4,
+      maximumFractionDigits: 4,
     }).format(num);
   };
 

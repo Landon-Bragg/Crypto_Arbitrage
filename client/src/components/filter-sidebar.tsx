@@ -53,6 +53,8 @@ export function FilterSidebar({
                 <SelectItem value="ADA">Cardano (ADA)</SelectItem>
                 <SelectItem value="SOL">Solana (SOL)</SelectItem>
                 <SelectItem value="DOT">Polkadot (DOT)</SelectItem>
+                <SelectItem value="LINK">Chainlink (LINK)</SelectItem>
+                <SelectItem value="MATIC">Polygon (MATIC)</SelectItem>
               </SelectContent>
             </Select>
           </div>

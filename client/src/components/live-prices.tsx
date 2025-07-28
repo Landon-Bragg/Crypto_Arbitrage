@@ -30,6 +30,10 @@ export function LivePrices() {
         return <div className="w-4 h-4 bg-purple-500 rounded-full"></div>;
       case 'DOT':
         return <div className="w-4 h-4 bg-pink-500 rounded-full"></div>;
+      case 'LINK':
+        return <div className="w-4 h-4 bg-blue-400 rounded-full"></div>;
+      case 'MATIC':
+        return <div className="w-4 h-4 bg-purple-400 rounded-full"></div>;
       default:
         return <div className="w-4 h-4 bg-gray-500 rounded-full"></div>;
     }

@@ -1,5 +1,7 @@
-import { type ArbitrageOpportunity, type InsertArbitrageOpportunity, type ExchangePrice, type InsertExchangePrice } from "@shared/schema";
+import { type ArbitrageOpportunity, type InsertArbitrageOpportunity, type ExchangePrice, type InsertExchangePrice, type User, type InsertUser, arbitrageOpportunities, exchangePrices, users } from "@shared/schema";
 import { randomUUID } from "crypto";
+import { db } from "./db";
+import { eq, and, desc, gte, lt } from "drizzle-orm";
 
 export interface IStorage {
   // Arbitrage opportunities
@@ -11,84 +13,121 @@ export interface IStorage {
   getLatestExchangePrices(): Promise<ExchangePrice[]>;
   createExchangePrice(price: InsertExchangePrice): Promise<ExchangePrice>;
   getExchangePrice(exchange: string, coin: string): Promise<ExchangePrice | undefined>;
+  
+  // User management
+  getUser(id: number): Promise<User | undefined>;
+  getUserByUsername(username: string): Promise<User | undefined>;
+  getUserByEmail(email: string): Promise<User | undefined>;
+  createUser(insertUser: InsertUser): Promise<User>;
+  updateUserStripeInfo(id: number, stripeCustomerId: string, stripeSubscriptionId: string): Promise<User>;
 }
 
-export class MemStorage implements IStorage {
-  private arbitrageOpportunities: Map<string, ArbitrageOpportunity>;
-  private exchangePrices: Map<string, ExchangePrice>;
+// MemStorage class removed - using DatabaseStorage only
 
-  constructor() {
-    this.arbitrageOpportunities = new Map();
-    this.exchangePrices = new Map();
-  }
-
+// Database storage implementation
+export class DatabaseStorage implements IStorage {
   async getArbitrageOpportunities(coin?: string, minSpread?: number): Promise<ArbitrageOpportunity[]> {
-    let opportunities = Array.from(this.arbitrageOpportunities.values());
+    let query = db.select().from(arbitrageOpportunities);
     
+    const conditions = [];
     if (coin && coin !== "all") {
-      opportunities = opportunities.filter(op => op.coin === coin);
+      conditions.push(eq(arbitrageOpportunities.coin, coin));
     }
-    
     if (minSpread !== undefined) {
-      opportunities = opportunities.filter(op => parseFloat(op.spread) >= minSpread);
+      conditions.push(gte(arbitrageOpportunities.spread, minSpread.toString()));
     }
     
-    // Sort by spread descending, then by timestamp descending
-    return opportunities.sort((a, b) => {
-      const spreadDiff = parseFloat(b.spread) - parseFloat(a.spread);
-      if (spreadDiff !== 0) return spreadDiff;
-      return new Date(b.timestamp).getTime() - new Date(a.timestamp).getTime();
-    });
+    if (conditions.length > 0) {
+      query = query.where(and(...conditions));
+    }
+    
+    const results = await query.orderBy(desc(arbitrageOpportunities.spread), desc(arbitrageOpportunities.timestamp));
+    return results;
   }
 
   async createArbitrageOpportunity(insertOpportunity: InsertArbitrageOpportunity): Promise<ArbitrageOpportunity> {
-    const id = randomUUID();
-    const opportunity: ArbitrageOpportunity = {
-      ...insertOpportunity,
-      id,
-      timestamp: new Date(),
-    };
-    this.arbitrageOpportunities.set(id, opportunity);
+    const [opportunity] = await db
+      .insert(arbitrageOpportunities)
+      .values(insertOpportunity)
+      .returning();
     return opportunity;
   }
 
   async clearOldArbitrageOpportunities(): Promise<void> {
     const fiveMinutesAgo = new Date(Date.now() - 5 * 60 * 1000);
-    
-    const entriesToDelete: string[] = [];
-    for (const [id, opportunity] of this.arbitrageOpportunities.entries()) {
-      if (new Date(opportunity.timestamp) < fiveMinutesAgo) {
-        entriesToDelete.push(id);
-      }
-    }
-    
-    for (const id of entriesToDelete) {
-      this.arbitrageOpportunities.delete(id);
-    }
+    await db
+      .delete(arbitrageOpportunities)
+      .where(lt(arbitrageOpportunities.timestamp, fiveMinutesAgo));
   }
 
   async getLatestExchangePrices(): Promise<ExchangePrice[]> {
-    return Array.from(this.exchangePrices.values());
+    const results = await db.select().from(exchangePrices).orderBy(desc(exchangePrices.timestamp));
+    return results;
   }
 
   async createExchangePrice(insertPrice: InsertExchangePrice): Promise<ExchangePrice> {
-    const id = randomUUID();
-    const price: ExchangePrice = {
-      ...insertPrice,
-      id,
-      timestamp: new Date(),
-    };
+    // Delete existing price for this exchange-coin pair first
+    await db
+      .delete(exchangePrices)
+      .where(and(
+        eq(exchangePrices.exchange, insertPrice.exchange),
+        eq(exchangePrices.coin, insertPrice.coin)
+      ));
     
-    // Use a composite key to store latest price for each exchange-coin pair
-    const key = `${insertPrice.exchange}-${insertPrice.coin}`;
-    this.exchangePrices.set(key, price);
+    const [price] = await db
+      .insert(exchangePrices)
+      .values(insertPrice)
+      .returning();
     return price;
   }
 
   async getExchangePrice(exchange: string, coin: string): Promise<ExchangePrice | undefined> {
-    const key = `${exchange}-${coin}`;
-    return this.exchangePrices.get(key);
+    const [price] = await db
+      .select()
+      .from(exchangePrices)
+      .where(and(
+        eq(exchangePrices.exchange, exchange),
+        eq(exchangePrices.coin, coin)
+      ));
+    return price || undefined;
+  }
+
+  async getUser(id: number): Promise<User | undefined> {
+    const [user] = await db.select().from(users).where(eq(users.id, id));
+    return user || undefined;
+  }
+
+  async getUserByUsername(username: string): Promise<User | undefined> {
+    const [user] = await db.select().from(users).where(eq(users.username, username));
+    return user || undefined;
+  }
+
+  async getUserByEmail(email: string): Promise<User | undefined> {
+    const [user] = await db.select().from(users).where(eq(users.email, email));
+    return user || undefined;
+  }
+
+  async createUser(insertUser: InsertUser): Promise<User> {
+    const [user] = await db
+      .insert(users)
+      .values(insertUser)
+      .returning();
+    return user;
+  }
+
+  async updateUserStripeInfo(id: number, stripeCustomerId: string, stripeSubscriptionId: string): Promise<User> {
+    const [user] = await db
+      .update(users)
+      .set({ 
+        stripeCustomerId, 
+        stripeSubscriptionId, 
+        isSubscribed: true,
+        updatedAt: new Date()
+      })
+      .where(eq(users.id, id))
+      .returning();
+    return user;
   }
 }
 
-export const storage = new MemStorage();
+export const storage = new DatabaseStorage();

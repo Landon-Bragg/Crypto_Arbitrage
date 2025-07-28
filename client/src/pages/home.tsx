@@ -6,6 +6,7 @@ import { AlertNotification } from "@/components/alert-notification";
 import { LivePrices } from "@/components/live-prices";
 import { ArbitrageOpportunity, Statistics } from "@shared/schema";
 import { ChartLine } from "lucide-react";
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 
 export default function Home() {
   const [selectedCoin, setSelectedCoin] = useState<string>("all");
@@ -136,17 +137,30 @@ export default function Home() {
           </div>
 
           {/* Main Content Area */}
-          <div className="lg:col-span-3 space-y-6">
-            {/* Live Prices Panel */}
-            <LivePrices />
-            
-            {/* Arbitrage Table */}
-            <ArbitrageTable
-              opportunities={opportunities}
-              isLoading={isLoadingOpportunities}
-              autoRefreshEnabled={autoRefreshEnabled}
-              onToggleAutoRefresh={() => setAutoRefreshEnabled(!autoRefreshEnabled)}
-            />
+          <div className="lg:col-span-3">
+            <Tabs defaultValue="opportunities" className="w-full">
+              <TabsList className="grid w-full grid-cols-2 bg-slate-800">
+                <TabsTrigger value="opportunities" className="data-[state=active]:bg-slate-700">
+                  Arbitrage Opportunities
+                </TabsTrigger>
+                <TabsTrigger value="prices" className="data-[state=active]:bg-slate-700">
+                  Live Exchange Prices
+                </TabsTrigger>
+              </TabsList>
+              
+              <TabsContent value="opportunities" className="mt-6">
+                <ArbitrageTable
+                  opportunities={opportunities}
+                  isLoading={isLoadingOpportunities}
+                  autoRefreshEnabled={autoRefreshEnabled}
+                  onToggleAutoRefresh={() => setAutoRefreshEnabled(!autoRefreshEnabled)}
+                />
+              </TabsContent>
+              
+              <TabsContent value="prices" className="mt-6">
+                <LivePrices />
+              </TabsContent>
+            </Tabs>
           </div>
         </div>
       </div>
