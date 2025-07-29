@@ -31,7 +31,7 @@ export function ArbitrageTable({
       }
       return acc;
     }, {})
-  );
+  ).sort((a, b) => parseFloat(b.spread) - parseFloat(a.spread)); // Sort by Spread % descending
 
   const getCoinIcon = (coin: string) => {
     switch (coin) {
