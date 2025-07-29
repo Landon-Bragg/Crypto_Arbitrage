@@ -1,5 +1,3 @@
-# replit.md
-
 ## Overview
 
 This is a cryptocurrency arbitrage monitoring application built with React frontend and Express.js backend. The system tracks price differences between cryptocurrency exchanges (Kraken, Coinbase, Binance US, and Gemini) for multiple cryptocurrencies (Bitcoin, Ethereum, Cardano, Solana, Polkadot, Chainlink, Ripple, and Cosmos), identifying arbitrage opportunities where the same asset has different prices across exchanges. The application now features user authentication, a freemium model with rate limiting, and advertisement integration for monetization.
