@@ -21,7 +21,7 @@ export function ArbitrageTable({
   autoRefreshEnabled,
   onToggleAutoRefresh,
 }: ArbitrageTableProps) {
-  const [minSpread, setMinSpread] = useState(0.1); // Default value, adjust as needed
+  const [minSpread, setMinSpread] = useState(0.1);
 
   // Deduplicate and sort only once when opportunities change
   const uniqueOpportunities = useMemo(() => {
@@ -36,9 +36,10 @@ export function ArbitrageTable({
     ).sort((a, b) => parseFloat(b.spread) - parseFloat(a.spread)); // Descending
   }, [opportunities]);
 
-  // Filter based on minSpread, fast and simple
+  // Always enforce minimum spread of 0.1%
   const filteredOpportunities = useMemo(() => {
-    return uniqueOpportunities.filter(opp => parseFloat(opp.spread) >= minSpread);
+    const effectiveMinSpread = Math.max(minSpread, 0.1);
+    return uniqueOpportunities.filter(opp => parseFloat(opp.spread) >= effectiveMinSpread);
   }, [uniqueOpportunities, minSpread]);
 
   const getCoinIcon = (coin: string) => {
@@ -126,7 +127,6 @@ export function ArbitrageTable({
           <CardTitle className="text-xl font-semibold text-white">
             Arbitrage Opportunities
           </CardTitle>
-          
           <div className="flex items-center space-x-4">
             {isLoading && (
               <div className="flex items-center space-x-2 text-slate-400">
@@ -134,7 +134,6 @@ export function ArbitrageTable({
                 <span className="text-sm">Updating...</span>
               </div>
             )}
-            
             <div className="text-sm text-slate-400">
               {opportunities.length} opportunities found
             </div>
@@ -153,13 +152,12 @@ export function ArbitrageTable({
                 <TableHead className="text-slate-300">Sell Price</TableHead>
                 <TableHead className="text-slate-300">Spread %</TableHead>
                 <TableHead className="text-slate-300">Timestamp</TableHead>
-                <TableHead className="text-slate-300">Action</TableHead>
               </TableRow>
             </TableHeader>
             <TableBody>
               {filteredOpportunities.length === 0 ? (
                 <TableRow>
-                  <TableCell colSpan={8} className="text-center py-8 text-slate-400">
+                  <TableCell colSpan={7} className="text-center py-8 text-slate-400">
                     {isLoading ? "Loading opportunities..." : "No arbitrage opportunities found"}
                   </TableCell>
                 </TableRow>
@@ -207,15 +205,6 @@ export function ArbitrageTable({
                     </TableCell>
                     <TableCell className="text-slate-400 font-mono">
                       {formatTimestamp(opportunity.timestamp)}
-                    </TableCell>
-                    <TableCell>
-                      <Button 
-                        variant="ghost" 
-                        size="sm"
-                        className="text-emerald-400 hover:text-emerald-300 hover:bg-slate-700"
-                      >
-                        View Details
-                      </Button>
                     </TableCell>
                   </TableRow>
                 ))
