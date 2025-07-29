@@ -21,6 +21,18 @@ export function ArbitrageTable({
   autoRefreshEnabled,
   onToggleAutoRefresh,
 }: ArbitrageTableProps) {
+  // Deduplicate opportunities by coin, buyExchange, sellExchange
+  const uniqueOpportunities = Object.values(
+    opportunities.reduce<Record<string, ArbitrageOpportunity>>((acc, opp) => {
+      const key = `${opp.coin}_${opp.buyExchange}_${opp.sellExchange}`;
+      // Keep the latest opportunity by timestamp
+      if (!acc[key] || new Date(opp.timestamp) > new Date(acc[key].timestamp)) {
+        acc[key] = opp;
+      }
+      return acc;
+    }, {})
+  );
+
   const getCoinIcon = (coin: string) => {
     switch (coin) {
       case 'BTC':
@@ -35,8 +47,6 @@ export function ArbitrageTable({
         return <div className="w-4 h-4 bg-pink-500 rounded-full"></div>;
       case 'LINK':
         return <div className="w-4 h-4 bg-blue-400 rounded-full"></div>;
-      case 'MATIC':
-        return <div className="w-4 h-4 bg-purple-400 rounded-full"></div>;
       default:
         return <div className="w-4 h-4 bg-gray-500 rounded-full"></div>;
     }
@@ -56,8 +66,6 @@ export function ArbitrageTable({
         return 'Polkadot';
       case 'LINK':
         return 'Chainlink';
-      case 'MATIC':
-        return 'Polygon';
       default:
         return coin;
     }
@@ -142,14 +150,14 @@ export function ArbitrageTable({
               </TableRow>
             </TableHeader>
             <TableBody>
-              {opportunities.length === 0 ? (
+              {uniqueOpportunities.length === 0 ? (
                 <TableRow>
                   <TableCell colSpan={8} className="text-center py-8 text-slate-400">
                     {isLoading ? "Loading opportunities..." : "No arbitrage opportunities found"}
                   </TableCell>
                 </TableRow>
               ) : (
-                opportunities.map((opportunity) => (
+                uniqueOpportunities.map((opportunity) => (
                   <TableRow 
                     key={opportunity.id} 
                     className="border-slate-700 hover:bg-slate-800 transition-colors"
@@ -212,7 +220,7 @@ export function ArbitrageTable({
         {/* Table Footer */}
         <div className="px-6 py-4 border-t border-slate-700 flex items-center justify-between">
           <div className="text-sm text-slate-400">
-            Showing opportunities with spread ≥ 0.5%
+            Showing all opportunities
           </div>
           
           <div className="flex items-center space-x-2">
