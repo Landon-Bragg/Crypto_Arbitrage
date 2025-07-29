@@ -1,0 +1,140 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+:root {
+  --background: hsl(0, 0%, 100%);
+  --foreground: hsl(222.2, 84%, 4.9%);
+  --muted: hsl(210, 40%, 96%);
+  --muted-foreground: hsl(215.4, 16.3%, 46.9%);
+  --popover: hsl(0, 0%, 100%);
+  --popover-foreground: hsl(222.2, 84%, 4.9%);
+  --card: hsl(0, 0%, 100%);
+  --card-foreground: hsl(222.2, 84%, 4.9%);
+  --border: hsl(214.3, 31.8%, 91.4%);
+  --input: hsl(214.3, 31.8%, 91.4%);
+  --primary: hsl(221.2, 83.2%, 53.3%);
+  --primary-foreground: hsl(210, 40%, 98%);
+  --secondary: hsl(210, 40%, 96%);
+  --secondary-foreground: hsl(222.2, 84%, 4.9%);
+  --accent: hsl(210, 40%, 96%);
+  --accent-foreground: hsl(222.2, 84%, 4.9%);
+  --destructive: hsl(0, 84.2%, 60.2%);
+  --destructive-foreground: hsl(210, 40%, 98%);
+  --ring: hsl(221.2, 83.2%, 53.3%);
+  --radius: 0.5rem;
+
+  /* Dark theme colors to match design */
+  --slate-850: hsl(221, 39%, 11%);
+  --slate-750: hsl(215, 28%, 17%);
+  --emerald-500: hsl(160, 84%, 39%);
+  --emerald-600: hsl(158, 64%, 52%);
+  --emerald-700: hsl(158, 64%, 42%);
+}
+
+.dark {
+  --background: hsl(222.2, 84%, 4.9%);
+  --foreground: hsl(210, 40%, 98%);
+  --muted: hsl(217.2, 32.6%, 17.5%);
+  --muted-foreground: hsl(215, 20.2%, 65.1%);
+  --popover: hsl(222.2, 84%, 4.9%);
+  --popover-foreground: hsl(210, 40%, 98%);
+  --card: hsl(222.2, 84%, 4.9%);
+  --card-foreground: hsl(210, 40%, 98%);
+  --border: hsl(217.2, 32.6%, 17.5%);
+  --input: hsl(217.2, 32.6%, 17.5%);
+  --primary: hsl(210, 40%, 98%);
+  --primary-foreground: hsl(222.2, 84%, 4.9%);
+  --secondary: hsl(217.2, 32.6%, 17.5%);
+  --secondary-foreground: hsl(210, 40%, 98%);
+  --accent: hsl(217.2, 32.6%, 17.5%);
+  --accent-foreground: hsl(210, 40%, 98%);
+  --destructive: hsl(0, 62.8%, 30.6%);
+  --destructive-foreground: hsl(210, 40%, 98%);
+  --ring: hsl(212.7, 26.8%, 83.9%);
+}
+
+@layer base {
+  * {
+    @apply border-border;
+  }
+
+  body {
+    @apply font-sans antialiased bg-background text-foreground;
+  }
+}
+
+/* Custom styles for dark theme to match design */
+.bg-slate-850 {
+  background-color: var(--slate-850);
+}
+
+.bg-slate-750 {
+  background-color: var(--slate-750);
+}
+
+.border-slate-700 {
+  border-color: hsl(215, 25%, 27%);
+}
+
+.border-slate-600 {
+  border-color: hsl(215, 20%, 25%);
+}
+
+.text-slate-100 {
+  color: hsl(210, 40%, 98%);
+}
+
+.text-slate-300 {
+  color: hsl(212, 13%, 65%);
+}
+
+.text-slate-400 {
+  color: hsl(215, 20%, 65%);
+}
+
+.hover\:bg-slate-800:hover {
+  background-color: hsl(215, 28%, 17%);
+}
+
+.hover\:bg-slate-700:hover {
+  background-color: hsl(215, 25%, 27%);
+}
+
+.hover\:bg-slate-600:hover {
+  background-color: hsl(215, 20%, 25%);
+}
+
+.bg-emerald-600 {
+  background-color: var(--emerald-600);
+}
+
+.hover\:bg-emerald-700:hover {
+  background-color: var(--emerald-700);
+}
+
+.text-emerald-400 {
+  color: hsl(158, 64%, 52%);
+}
+
+.hover\:text-emerald-300:hover {
+  color: hsl(158, 64%, 62%);
+}
+
+/* Animation for sliding in notifications */
+@keyframes slide-in-from-right-full {
+  from {
+    transform: translateX(100%);
+  }
+  to {
+    transform: translateX(0);
+  }
+}
+
+.animate-in {
+  animation-fill-mode: forwards;
+}
+
+.slide-in-from-right-full {
+  animation: slide-in-from-right-full 0.3s ease-out;
+}
