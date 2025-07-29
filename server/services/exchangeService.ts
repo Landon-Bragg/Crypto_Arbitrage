@@ -52,7 +52,7 @@ class ExchangeService {
     'BTC': {
       kraken: 'XXBTZUSD',
       coinbase: 'BTC-USD',
-      binance: 'BTCUSDT',
+      binance: 'BTCUSD',
       gemini: 'btcusd'
     },
     'ETH': {
@@ -81,9 +81,16 @@ class ExchangeService {
       coinbase: 'LINK-USD',
       binance: 'LINKUSDT'
     },
-    'MATIC': {
-      coinbase: 'MATIC-USD',
-      binance: 'MATICUSDT'
+    'XRP': {
+      kraken: 'XXRPZUSD',
+      coinbase: 'XRP-USD',
+      binance: 'XRPUSDT',
+      gemini: 'xrpusd'
+    },
+    'ATOM': {
+      kraken: 'ATOMUSD',
+      coinbase: 'ATOM-USD',
+      binance: 'ATOMUSDT'
     }
   } as const;
 

@@ -20,6 +20,7 @@ export interface IStorage {
   getUserByEmail(email: string): Promise<User | undefined>;
   createUser(insertUser: InsertUser): Promise<User>;
   updateUserStripeInfo(id: number, stripeCustomerId: string, stripeSubscriptionId: string): Promise<User>;
+  updateUserPremiumStatus(id: number, isPremium: boolean): Promise<User>;
 }
 
 // MemStorage class removed - using DatabaseStorage only
@@ -121,7 +122,19 @@ export class DatabaseStorage implements IStorage {
       .set({ 
         stripeCustomerId, 
         stripeSubscriptionId, 
-        isSubscribed: true,
+        isPremium: true,
+        updatedAt: new Date()
+      })
+      .where(eq(users.id, id))
+      .returning();
+    return user;
+  }
+
+  async updateUserPremiumStatus(id: number, isPremium: boolean): Promise<User> {
+    const [user] = await db
+      .update(users)
+      .set({ 
+        isPremium,
         updatedAt: new Date()
       })
       .where(eq(users.id, id))

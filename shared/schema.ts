@@ -27,9 +27,10 @@ export const users = pgTable("users", {
   username: varchar("username", { length: 255 }).notNull().unique(),
   email: varchar("email", { length: 255 }).notNull().unique(),
   passwordHash: varchar("password_hash", { length: 255 }).notNull(),
+  isPremium: boolean("is_premium").default(false).notNull(),
   stripeCustomerId: varchar("stripe_customer_id", { length: 255 }),
   stripeSubscriptionId: varchar("stripe_subscription_id", { length: 255 }),
-  isSubscribed: boolean("is_subscribed").default(false).notNull(),
+  lastApiCall: timestamp("last_api_call"),
   createdAt: timestamp("created_at").defaultNow().notNull(),
   updatedAt: timestamp("updated_at").defaultNow().notNull(),
 });
@@ -59,7 +60,7 @@ export type User = typeof users.$inferSelect;
 
 // Frontend types for API responses
 export const filterArbitrageSchema = z.object({
-  coin: z.enum(["all", "BTC", "ETH", "ADA", "SOL", "DOT", "LINK", "MATIC"]).default("all"),
+  coin: z.enum(["all", "BTC", "ETH", "ADA", "SOL", "DOT", "LINK", "XRP", "ATOM"]).default("all"),
   minSpread: z.number().min(0).default(0.1),
 });
 

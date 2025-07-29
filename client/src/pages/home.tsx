@@ -4,11 +4,15 @@ import { ArbitrageTable } from "@/components/arbitrage-table";
 import { FilterSidebar } from "@/components/filter-sidebar";
 import { AlertNotification } from "@/components/alert-notification";
 import { LivePrices } from "@/components/live-prices";
+import { AdBanner } from "@/components/ad-banner";
+import { UserMenu } from "@/components/user-menu";
 import { ArbitrageOpportunity, Statistics } from "@shared/schema";
 import { ChartLine } from "lucide-react";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import { useAuth } from "@/hooks/useAuth";
 
 export default function Home() {
+  const { user, isAuthenticated } = useAuth();
   const [selectedCoin, setSelectedCoin] = useState<string>("all");
   const [minSpread, setMinSpread] = useState<number>(0.1);
   const [alertsEnabled, setAlertsEnabled] = useState<boolean>(true);
@@ -35,7 +39,7 @@ export default function Home() {
       }
       return response.json();
     },
-    refetchInterval: autoRefreshEnabled ? 15000 : false,
+    refetchInterval: autoRefreshEnabled ? (user?.isPremium ? 5000 : 15000) : false,
   });
 
   // Query for statistics
@@ -48,7 +52,7 @@ export default function Home() {
       }
       return response.json();
     },
-    refetchInterval: autoRefreshEnabled ? 15000 : false,
+    refetchInterval: autoRefreshEnabled ? (user?.isPremium ? 5000 : 15000) : false,
   });
 
   // Update last update time
@@ -99,6 +103,11 @@ export default function Home() {
             <span className="text-xs bg-emerald-500 text-white px-2 py-1 rounded-full">
               LIVE
             </span>
+            {user?.isPremium && (
+              <span className="text-xs bg-yellow-500 text-black px-2 py-1 rounded-full font-medium">
+                PREMIUM
+              </span>
+            )}
           </div>
           
           <div className="flex items-center space-x-4">
@@ -114,9 +123,16 @@ export default function Home() {
               }`} />
               <span className="text-sm text-slate-300">{connectionStatus}</span>
             </div>
+
+            <UserMenu />
           </div>
         </div>
       </header>
+
+      {/* Advertisement Banner for Free Users */}
+      {!user?.isPremium && (
+        <AdBanner />
+      )}
 
       {/* Main Content */}
       <div className="max-w-7xl mx-auto px-6 py-6">

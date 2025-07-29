@@ -54,7 +54,8 @@ export function FilterSidebar({
                 <SelectItem value="SOL">Solana (SOL)</SelectItem>
                 <SelectItem value="DOT">Polkadot (DOT)</SelectItem>
                 <SelectItem value="LINK">Chainlink (LINK)</SelectItem>
-                <SelectItem value="MATIC">Polygon (MATIC)</SelectItem>
+                <SelectItem value="XRP">Ripple (XRP)</SelectItem>
+                <SelectItem value="ATOM">Cosmos (ATOM)</SelectItem>
               </SelectContent>
             </Select>
           </div>

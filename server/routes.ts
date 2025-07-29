@@ -2,11 +2,126 @@ import type { Express } from "express";
 import { createServer, type Server } from "http";
 import { storage } from "./storage";
 import { exchangeService } from "./services/exchangeService";
-import { filterArbitrageSchema } from "@shared/schema";
+import { filterArbitrageSchema, insertUserSchema } from "@shared/schema";
+import { authenticateToken, optionalAuth, dynamicRateLimit, createToken, hashPassword, comparePassword, type AuthRequest } from "./auth";
+import { z } from "zod";
 
 export async function registerRoutes(app: Express): Promise<Server> {
-  // Get arbitrage opportunities with optional filtering
-  app.get("/api/arbitrage", async (req, res) => {
+  // Authentication routes
+  const loginSchema = z.object({
+    username: z.string(),
+    password: z.string(),
+  });
+
+  const registerSchema = insertUserSchema.extend({
+    password: z.string().min(6),
+  });
+
+  app.post("/api/auth/register", async (req, res) => {
+    try {
+      const validatedData = registerSchema.parse(req.body);
+      
+      // Check if user already exists
+      const existingUser = await storage.getUserByUsername(validatedData.username);
+      if (existingUser) {
+        return res.status(400).json({ message: "Username already exists" });
+      }
+
+      const existingEmail = await storage.getUserByEmail(validatedData.email);
+      if (existingEmail) {
+        return res.status(400).json({ message: "Email already exists" });
+      }
+
+      // Hash password and create user
+      const hashedPassword = await hashPassword(validatedData.password);
+      const newUser = await storage.createUser({
+        username: validatedData.username,
+        email: validatedData.email,
+        passwordHash: hashedPassword,
+      });
+
+      // Create token
+      const token = createToken({
+        id: newUser.id,
+        username: newUser.username,
+        email: newUser.email,
+        isPremium: newUser.isPremium,
+      });
+
+      res.status(201).json({ 
+        message: "User created successfully", 
+        token,
+        user: {
+          id: newUser.id,
+          username: newUser.username,
+          email: newUser.email,
+          isPremium: newUser.isPremium,
+        }
+      });
+    } catch (error) {
+      console.error("Registration error:", error);
+      res.status(400).json({ message: "Registration failed" });
+    }
+  });
+
+  app.post("/api/auth/login", async (req, res) => {
+    try {
+      const validatedData = loginSchema.parse(req.body);
+      
+      const user = await storage.getUserByUsername(validatedData.username);
+      if (!user) {
+        return res.status(401).json({ message: "Invalid credentials" });
+      }
+
+      const isValidPassword = await comparePassword(validatedData.password, user.passwordHash);
+      if (!isValidPassword) {
+        return res.status(401).json({ message: "Invalid credentials" });
+      }
+
+      const token = createToken({
+        id: user.id,
+        username: user.username,
+        email: user.email,
+        isPremium: user.isPremium,
+      });
+
+      res.json({ 
+        message: "Login successful", 
+        token,
+        user: {
+          id: user.id,
+          username: user.username,
+          email: user.email,
+          isPremium: user.isPremium,
+        }
+      });
+    } catch (error) {
+      console.error("Login error:", error);
+      res.status(400).json({ message: "Login failed" });
+    }
+  });
+
+  app.get("/api/auth/me", authenticateToken, async (req: AuthRequest, res) => {
+    try {
+      const user = await storage.getUser(req.user!.id);
+      if (!user) {
+        return res.status(404).json({ message: "User not found" });
+      }
+
+      res.json({
+        id: user.id,
+        username: user.username,
+        email: user.email,
+        isPremium: user.isPremium,
+      });
+    } catch (error) {
+      console.error("Get user error:", error);
+      res.status(500).json({ message: "Failed to get user" });
+    }
+  });
+
+  // Get arbitrage opportunities with optional filtering and rate limiting
+  app.get("/api/arbitrage", optionalAuth, dynamicRateLimit, async (req: AuthRequest, res) => {
     try {
       const { coin = "all", minSpread = 0.5 } = req.query;
       
@@ -27,8 +142,8 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
-  // Get latest exchange prices
-  app.get("/api/prices", async (req, res) => {
+  // Get latest exchange prices with rate limiting
+  app.get("/api/prices", optionalAuth, dynamicRateLimit, async (req: AuthRequest, res) => {
     try {
       const prices = await storage.getLatestExchangePrices();
       res.json(prices);

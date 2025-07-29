@@ -2,7 +2,7 @@
 
 ## Overview
 
-This is a cryptocurrency arbitrage monitoring application built with React frontend and Express.js backend. The system tracks price differences between cryptocurrency exchanges (Kraken, Coinbase, Binance US, and Gemini) for multiple cryptocurrencies (Bitcoin, Ethereum, Cardano, Solana, and Polkadot), identifying arbitrage opportunities where the same asset has different prices across exchanges.
+This is a cryptocurrency arbitrage monitoring application built with React frontend and Express.js backend. The system tracks price differences between cryptocurrency exchanges (Kraken, Coinbase, Binance US, and Gemini) for multiple cryptocurrencies (Bitcoin, Ethereum, Cardano, Solana, Polkadot, Chainlink, Ripple, and Cosmos), identifying arbitrage opportunities where the same asset has different prices across exchanges. The application now features user authentication, a freemium model with rate limiting, and advertisement integration for monetization.
 
 ## User Preferences
 
@@ -41,8 +41,16 @@ Preferred communication style: Simple, everyday language.
 
 ### Data Models
 - **Arbitrage Opportunities**: Tracks buy/sell exchanges, prices, spreads, and timestamps across all supported exchange pairs
-- **Exchange Prices**: Stores latest price data from each exchange for each supported coin (5 cryptocurrencies, 4 exchanges)
+- **Exchange Prices**: Stores latest price data from each exchange for each supported coin (8 cryptocurrencies, 4 exchanges)
 - **Statistics**: Aggregated metrics about active opportunities and highest spreads
+- **Users**: Stores user authentication data including username, email, password hash, and premium status
+- **Authentication**: JWT token-based authentication with bcrypt password hashing
+
+### Authentication & Premium Features
+- **User Registration/Login**: Secure authentication with JWT tokens and bcrypt password hashing
+- **Freemium Model**: Free users get slower updates (15s intervals), premium users get faster updates (5s intervals)
+- **Rate Limiting**: Free users limited to 4 requests/minute, premium users get 20 requests/minute
+- **Advertisement Integration**: Ad banners displayed for free users to encourage premium upgrades
 
 ## Data Flow
 
