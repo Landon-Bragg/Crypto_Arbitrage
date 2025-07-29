@@ -23,8 +23,6 @@ export interface IStorage {
   updateUserPremiumStatus(id: number, isPremium: boolean): Promise<User>;
 }
 
-// MemStorage class removed - using DatabaseStorage only
-
 // Database storage implementation
 export class DatabaseStorage implements IStorage {
   async getArbitrageOpportunities(coin?: string, minSpread?: number): Promise<ArbitrageOpportunity[]> {
@@ -47,12 +45,27 @@ export class DatabaseStorage implements IStorage {
   }
 
   async createArbitrageOpportunity(insertOpportunity: InsertArbitrageOpportunity): Promise<ArbitrageOpportunity> {
-    const [opportunity] = await db
-      .insert(arbitrageOpportunities)
-      .values(insertOpportunity)
-      .returning();
-    return opportunity;
-  }
+  // Using raw SQL for proper upsert with ON CONFLICT
+  const [opportunity] = await db
+    .insert(arbitrageOpportunities)
+    .values(insertOpportunity)
+    .onConflictDoUpdate({
+      target: [
+        arbitrageOpportunities.coin,
+        arbitrageOpportunities.buyExchange,
+        arbitrageOpportunities.sellExchange
+      ],
+      set: {
+        buyPrice: insertOpportunity.buyPrice,
+        sellPrice: insertOpportunity.sellPrice,
+        spread: insertOpportunity.spread,
+        timestamp: sql`now()`,
+      },
+    })
+    .returning();
+  
+  return opportunity;
+}
 
   async clearOldArbitrageOpportunities(): Promise<void> {
     const fiveMinutesAgo = new Date(Date.now() - 5 * 60 * 1000);

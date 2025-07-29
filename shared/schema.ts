@@ -1,5 +1,5 @@
 import { sql } from "drizzle-orm";
-import { pgTable, text, varchar, decimal, timestamp, integer, boolean } from "drizzle-orm/pg-core";
+import { pgTable, text, varchar, decimal, timestamp, integer, boolean, unique } from "drizzle-orm/pg-core";
 import { createInsertSchema } from "drizzle-zod";
 import { z } from "zod";
 
@@ -12,7 +12,10 @@ export const arbitrageOpportunities = pgTable("arbitrage_opportunities", {
   sellPrice: decimal("sell_price", { precision: 20, scale: 8 }).notNull(),
   spread: decimal("spread", { precision: 10, scale: 4 }).notNull(),
   timestamp: timestamp("timestamp").defaultNow().notNull(),
-});
+}, (table) => ({
+  // Unique constraint to prevent duplicates for the same coin/exchange combination
+  uniqueOpportunity: unique("unique_coin_buy_sell").on(table.coin, table.buyExchange, table.sellExchange),
+}));
 
 export const exchangePrices = pgTable("exchange_prices", {
   id: varchar("id").primaryKey().default(sql`gen_random_uuid()`),
