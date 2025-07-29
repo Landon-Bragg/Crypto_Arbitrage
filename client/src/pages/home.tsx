@@ -4,7 +4,6 @@ import { ArbitrageTable } from "@/components/arbitrage-table";
 import { FilterSidebar } from "@/components/filter-sidebar";
 import { AlertNotification } from "@/components/alert-notification";
 import { LivePrices } from "@/components/live-prices";
-import { AdBanner } from "@/components/ad-banner";
 import { UserMenu } from "@/components/user-menu";
 import { ArbitrageOpportunity, Statistics } from "@shared/schema";
 import { ChartLine } from "lucide-react";
