@@ -118,11 +118,11 @@ export async function registerRoutes(app: Express): Promise<Server> {
   // Get arbitrage opportunities with optional filtering
   app.get("/api/arbitrage", optionalAuth, async (req: AuthRequest, res) => {
     try {
-      const { coin = "all", minSpread = 0.5 } = req.query;
-      
+      const { coin = "all", minSpread } = req.query;
+
       const validatedParams = filterArbitrageSchema.parse({
         coin,
-        minSpread: minSpread ? parseFloat(minSpread as string) : 0.5,
+        minSpread: minSpread !== undefined ? parseFloat(minSpread as string) : 0.1,
       });
 
       const opportunities = await storage.getArbitrageOpportunities(
