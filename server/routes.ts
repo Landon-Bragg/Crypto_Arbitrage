@@ -3,7 +3,7 @@ import { createServer, type Server } from "http";
 import { storage } from "./storage";
 import { exchangeService } from "./services/exchangeService";
 import { filterArbitrageSchema, insertUserSchema } from "@shared/schema";
-import { authenticateToken, optionalAuth, createToken, hashPassword, comparePassword, type AuthRequest } from "./auth";
+import { authenticateToken, optionalAuth, createToken, hashPassword, comparePassword, type AuthRequest, dynamicRateLimit } from "./auth"; // Add dynamicRateLimit import
 import { z } from "zod";
 
 export async function registerRoutes(app: Express): Promise<Server> {
@@ -115,8 +115,8 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
-  // Get arbitrage opportunities with optional filtering
-  app.get("/api/arbitrage", optionalAuth, async (req: AuthRequest, res) => {
+  // Get arbitrage opportunities with optional filtering and dynamic rate limit
+  app.get("/api/arbitrage", dynamicRateLimit, optionalAuth, async (req: AuthRequest, res) => {
     try {
       const { coin = "all", minSpread } = req.query;
 
