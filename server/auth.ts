@@ -84,3 +84,13 @@ export const userRateLimit = rateLimit({
   legacyHeaders: false,
   trustProxy: true,
 });
+
+// Dynamic rate limit middleware (example: 4 requests per minute per IP)
+export const dynamicRateLimit = rateLimit({
+  windowMs: 60 * 1000, // 1 minute
+  max: 4, // 4 requests per minute per IP
+  message: { message: 'Rate limit exceeded. Please wait before making more requests.' },
+  standardHeaders: true,
+  legacyHeaders: false,
+  trustProxy: true,
+});
