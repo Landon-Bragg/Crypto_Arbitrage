@@ -2,26 +2,22 @@
 
 This is a cryptocurrency arbitrage monitoring application built with React frontend and Express.js backend. The system tracks price differences between cryptocurrency exchanges (Kraken, Coinbase, Binance US, and Gemini) for multiple cryptocurrencies (Bitcoin, Ethereum, Cardano, Solana, Polkadot, Chainlink, Ripple, and Cosmos), identifying arbitrage opportunities where the same asset has different prices across exchanges. The application now features user authentication, a freemium model with rate limiting, and advertisement integration for monetization.
 
-## User Preferences
-
-Preferred communication style: Simple, everyday language.
-
 ## System Architecture
 
 ### Frontend Architecture
-- **Framework**: React 18 with TypeScript
+- **Framework**: React with TypeScript
 - **Build Tool**: Vite for development and bundling
 - **Routing**: Wouter for client-side routing
 - **State Management**: TanStack React Query for server state management
 - **UI Components**: shadcn/ui component library built on Radix UI primitives
-- **Styling**: Tailwind CSS with custom design tokens and dark theme support
+- **Styling**: Tailwind CSS
 
 ### Backend Architecture
 - **Framework**: Express.js with TypeScript
 - **Runtime**: Node.js with ES modules
 - **API Design**: RESTful endpoints for arbitrage data and price updates
 - **Data Storage**: In-memory storage with interface for future database integration
-- **External APIs**: Integration with Kraken and Coinbase exchange APIs
+- **External APIs**: Integration with crypto exchange APIs
 
 ## Key Components
 
@@ -35,20 +31,13 @@ Preferred communication style: Simple, everyday language.
 - **Live Prices Panel**: Real-time display of current prices from all exchanges, grouped by cryptocurrency with spread calculations
 - **Filter Sidebar**: Provides filtering by cryptocurrency type (BTC, ETH, ADA, SOL, DOT) and minimum spread threshold
 - **Alert System**: Real-time notifications for new arbitrage opportunities above configured thresholds
-- **Auto-refresh**: Configurable automatic data refreshing every 15 seconds
+- **Auto-refresh**: Automatic data refreshing every 5 seconds
 
 ### Data Models
 - **Arbitrage Opportunities**: Tracks buy/sell exchanges, prices, spreads, and timestamps across all supported exchange pairs
-- **Exchange Prices**: Stores latest price data from each exchange for each supported coin (8 cryptocurrencies, 4 exchanges)
+- **Exchange Prices**: Stores latest price data from each exchange for each supported coin
 - **Statistics**: Aggregated metrics about active opportunities and highest spreads
-- **Users**: Stores user authentication data including username, email, password hash, and premium status
-- **Authentication**: JWT token-based authentication with bcrypt password hashing
-
-### Authentication & Premium Features
-- **User Registration/Login**: Secure authentication with JWT tokens and bcrypt password hashing
-- **Freemium Model**: Free users get slower updates (15s intervals), premium users get faster updates (5s intervals)
-- **Rate Limiting**: Free users limited to 4 requests/minute, premium users get 20 requests/minute
-- **Advertisement Integration**: Ad banners displayed for free users to encourage premium upgrades
+- **Advertisement Integration**: Ad banners displayed
 
 ## Data Flow
 
@@ -56,7 +45,7 @@ Preferred communication style: Simple, everyday language.
 2. **Opportunity Detection**: System compares prices across all possible exchange pairs to identify arbitrage opportunities
 3. **Data Storage**: Opportunities and prices stored in memory with cleanup of old data
 4. **API Exposure**: REST endpoints serve filtered arbitrage data to frontend
-5. **Real-time Updates**: Frontend polls API every 15 seconds for latest opportunities and live prices
+5. **Real-time Updates**: Frontend polls API every 5 seconds for latest opportunities and live prices
 6. **User Interaction**: Filtering and alert preferences modify data presentation
 
 ## External Dependencies
@@ -64,9 +53,6 @@ Preferred communication style: Simple, everyday language.
 ### Backend Dependencies
 - **@tanstack/react-query**: Server state management and caching
 - **axios**: HTTP client for exchange API calls
-- **drizzle-orm**: Database ORM (configured for future PostgreSQL integration)
-- **@neondatabase/serverless**: PostgreSQL client for serverless environments
-- **connect-pg-simple**: PostgreSQL session store (not currently used)
 
 ### Frontend Dependencies
 - **@radix-ui/***: Headless UI component primitives
@@ -92,9 +78,4 @@ Preferred communication style: Simple, everyday language.
 - **Production**: Bundled Express server serves built React app from public directory
 - **Database**: Configured for PostgreSQL via DATABASE_URL environment variable
 
-### Database Setup
-- **Schema**: Defined in `shared/schema.ts` using Drizzle ORM
-- **Migrations**: Generated and applied via `drizzle-kit push` command
-- **Tables**: `arbitrage_opportunities` and `exchange_prices` with proper indexing
 
-The application is designed to be easily deployable on platforms like Replit, with automatic database provisioning and a single-command build process that handles both frontend and backend compilation.
