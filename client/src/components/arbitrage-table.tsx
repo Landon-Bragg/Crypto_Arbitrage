@@ -5,8 +5,7 @@ import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Loader2 } from "lucide-react";
 import { ArbitrageOpportunity } from "@shared/schema";
-import { SiBitcoin } from "react-icons/si";
-import { SiEthereum } from "react-icons/si";
+import { SiBitcoin, SiEthereum, SiCardano, SiSolana, SiPolkadot, SiChainlink, SiRipple } from "react-icons/si";
 
 interface ArbitrageTableProps {
   opportunities: ArbitrageOpportunity[];
@@ -40,13 +39,18 @@ export function ArbitrageTable({
       case 'ETH':
         return <SiEthereum className="text-blue-500 text-lg" />;
       case 'ADA':
-        return <div className="w-4 h-4 bg-blue-600 rounded-full"></div>;
+        return <SiCardano className="text-blue-600 text-lg" />;
       case 'SOL':
-        return <div className="w-4 h-4 bg-purple-500 rounded-full"></div>;
+        return <SiSolana className="text-purple-500 text-lg" />;
       case 'DOT':
-        return <div className="w-4 h-4 bg-pink-500 rounded-full"></div>;
+        return <SiPolkadot className="text-pink-500 text-lg" />;
       case 'LINK':
-        return <div className="w-4 h-4 bg-blue-400 rounded-full"></div>;
+        return <SiChainlink className="text-blue-400 text-lg" />;
+      case 'XRP':
+        return <SiRipple className="text-gray-400 text-lg" />;
+      case 'ATOM':
+        // If SiAtom is not available, fallback to a colored circle
+        return <div className="w-4 h-4 bg-indigo-500 rounded-full"></div>;
       default:
         return <div className="w-4 h-4 bg-gray-500 rounded-full"></div>;
     }
