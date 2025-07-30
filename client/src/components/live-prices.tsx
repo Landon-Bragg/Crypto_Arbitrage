@@ -5,6 +5,18 @@ import { Loader2 } from "lucide-react";
 import { ExchangePrice } from "@shared/schema";
 import { SiBitcoin, SiEthereum, SiCardano, SiSolana, SiPolkadot, SiChainlink, SiRipple } from "react-icons/si";
 
+// Define the coin order you want to display
+const COIN_ORDER = [
+  "BTC",
+  "ETH",
+  "ADA",
+  "SOL",
+  "DOT",
+  "LINK",
+  "XRP",
+  "ATOM"
+];
+
 export function LivePrices() {
   const { data: prices = [], isLoading } = useQuery<ExchangePrice[]>({
     queryKey: ["/api/prices"],
@@ -84,8 +96,9 @@ export function LivePrices() {
     });
   };
 
-  // Group prices by coin
+  // Group prices by coin, filter out MATIC
   const pricesByCoin = prices.reduce((acc, price) => {
+    if (price.coin === "MATIC") return acc; // Filter out MATIC
     if (!acc[price.coin]) {
       acc[price.coin] = [];
     }
@@ -110,12 +123,12 @@ export function LivePrices() {
       </CardHeader>
 
       <CardContent className="space-y-4">
-        {Object.keys(pricesByCoin).length === 0 ? (
+        {COIN_ORDER.filter(coin => pricesByCoin[coin]).length === 0 ? (
           <div className="text-center py-8 text-slate-400">
             {isLoading ? "Loading prices..." : "No price data available"}
           </div>
         ) : (
-          Object.entries(pricesByCoin).map(([coin, coinPrices]) => (
+          COIN_ORDER.filter(coin => pricesByCoin[coin]).map((coin) => (
             <div key={coin} className="border border-slate-700 rounded-lg p-4">
               <div className="flex items-center mb-3">
                 <div className="w-8 h-8 rounded-full flex items-center justify-center mr-3">
@@ -125,7 +138,7 @@ export function LivePrices() {
               </div>
               
               <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-3">
-                {coinPrices.map((price) => (
+                {pricesByCoin[coin].map((price) => (
                   <div 
                     key={`${price.exchange}-${price.coin}`}
                     className="bg-slate-800 rounded-lg p-3"
@@ -145,13 +158,13 @@ export function LivePrices() {
                 ))}
               </div>
 
-              {coinPrices.length >= 2 && (
+              {pricesByCoin[coin].length >= 2 && (
                 <div className="mt-3 pt-3 border-t border-slate-700">
                   <div className="text-sm text-slate-400">
                     Spread: {(() => {
-                      const prices = coinPrices.map(p => parseFloat(p.price));
-                      const maxPrice = Math.max(...prices);
-                      const minPrice = Math.min(...prices);
+                      const pricesArr = pricesByCoin[coin].map(p => parseFloat(p.price));
+                      const maxPrice = Math.max(...pricesArr);
+                      const minPrice = Math.min(...pricesArr);
                       const spread = ((maxPrice - minPrice) / minPrice) * 100;
                       return (
                         <span className={spread >= 0.5 ? "text-emerald-400 font-semibold" : "text-slate-300"}>
