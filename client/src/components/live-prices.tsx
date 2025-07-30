@@ -3,7 +3,7 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Loader2 } from "lucide-react";
 import { ExchangePrice } from "@shared/schema";
-import { SiBitcoin, SiEthereum } from "react-icons/si";
+import { SiBitcoin, SiEthereum, SiCardano, SiSolana, SiPolkadot, SiChainlink, SiRipple } from "react-icons/si";
 
 export function LivePrices() {
   const { data: prices = [], isLoading } = useQuery<ExchangePrice[]>({
@@ -25,13 +25,17 @@ export function LivePrices() {
       case 'ETH':
         return <SiEthereum className="text-blue-500 text-lg" />;
       case 'ADA':
-        return <div className="w-4 h-4 bg-blue-600 rounded-full"></div>;
+        return <SiCardano className="text-blue-600 text-lg" />;
       case 'SOL':
-        return <div className="w-4 h-4 bg-purple-500 rounded-full"></div>;
+        return <SiSolana className="text-purple-500 text-lg" />;
       case 'DOT':
-        return <div className="w-4 h-4 bg-pink-500 rounded-full"></div>;
+        return <SiPolkadot className="text-pink-500 text-lg" />;
       case 'LINK':
-        return <div className="w-4 h-4 bg-blue-400 rounded-full"></div>;
+        return <SiChainlink className="text-blue-400 text-lg" />;
+      case 'XRP':
+        return <SiRipple className="text-gray-400 text-lg" />;
+      case 'ATOM':
+        return <div className="w-4 h-4 bg-indigo-500 rounded-full"></div>;
       default:
         return <div className="w-4 h-4 bg-gray-500 rounded-full"></div>;
     }

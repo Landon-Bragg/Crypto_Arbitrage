@@ -4,14 +4,11 @@ import { ArbitrageTable } from "@/components/arbitrage-table";
 import { FilterSidebar } from "@/components/filter-sidebar";
 import { AlertNotification } from "@/components/alert-notification";
 import { LivePrices } from "@/components/live-prices";
-import { UserMenu } from "@/components/user-menu";
 import { ArbitrageOpportunity, Statistics } from "@shared/schema";
 import { ChartLine } from "lucide-react";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { useAuth } from "@/hooks/useAuth";
 
 export default function Home() {
-  const { user, isAuthenticated } = useAuth();
   const [selectedCoin, setSelectedCoin] = useState<string>("all");
   const [minSpread, setMinSpread] = useState<number>(0.1);
   const [alertsEnabled, setAlertsEnabled] = useState<boolean>(true);
@@ -112,7 +109,6 @@ export default function Home() {
               }`} />
               <span className="text-sm text-slate-300">{connectionStatus}</span>
             </div>
-            <UserMenu />
           </div>
         </div>
       </header>
