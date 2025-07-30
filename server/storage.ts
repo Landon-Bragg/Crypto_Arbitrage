@@ -43,23 +43,25 @@ export class DatabaseStorage implements IStorage {
   }
 
   async createArbitrageOpportunity(insertOpportunity: InsertArbitrageOpportunity): Promise<ArbitrageOpportunity> {
-    // Using raw SQL for proper upsert with ON CONFLICT
+    // First, try to delete any existing opportunity with the same coin/exchange combination
+    // This handles the "upsert" behavior without relying on database constraints
+    try {
+      await db
+        .delete(arbitrageOpportunities)
+        .where(and(
+          eq(arbitrageOpportunities.coin, insertOpportunity.coin),
+          eq(arbitrageOpportunities.buyExchange, insertOpportunity.buyExchange),
+          eq(arbitrageOpportunities.sellExchange, insertOpportunity.sellExchange)
+        ));
+    } catch (error) {
+      // Ignore delete errors - the record might not exist
+      console.log(`No existing opportunity to delete for ${insertOpportunity.coin} ${insertOpportunity.buyExchange}->${insertOpportunity.sellExchange}`);
+    }
+
+    // Now insert the new opportunity
     const [opportunity] = await db
       .insert(arbitrageOpportunities)
       .values(insertOpportunity)
-      .onConflictDoUpdate({
-        target: [
-          arbitrageOpportunities.coin,
-          arbitrageOpportunities.buyExchange,
-          arbitrageOpportunities.sellExchange
-        ],
-        set: {
-          buyPrice: insertOpportunity.buyPrice,
-          sellPrice: insertOpportunity.sellPrice,
-          spread: insertOpportunity.spread,
-          timestamp: sql`now()`,
-        },
-      })
       .returning();
     
     return opportunity;
