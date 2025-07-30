@@ -3,12 +3,11 @@ import { createServer, type Server } from "http";
 import { storage } from "./storage";
 import { exchangeService } from "./services/exchangeService";
 import { filterArbitrageSchema } from "@shared/schema";
-import { dynamicRateLimit } from "./auth"; // Only import dynamicRateLimit
 import { z } from "zod";
 
 export async function registerRoutes(app: Express): Promise<Server> {
   // Get arbitrage opportunities with optional filtering and dynamic rate limit
-  app.get("/api/arbitrage", dynamicRateLimit, async (req, res) => {
+  app.get("/api/arbitrage", async (req, res) => {
     try {
       const { coin = "all", minSpread } = req.query;
 
