@@ -127,6 +127,8 @@ class ExchangeService {
               coin,
               price: price.toString(),
             });
+            
+            console.log(`Kraken ${coin}: $${price}`);
           }
         }
       }
@@ -152,6 +154,8 @@ class ExchangeService {
             coin,
             price: price.toString(),
           });
+          
+          console.log(`Coinbase ${coin}: $${price}`);
         }
       }
     } catch (error) {
@@ -162,11 +166,15 @@ class ExchangeService {
 
   async calculateArbitrageOpportunities(): Promise<void> {
     try {
+      console.log('Starting arbitrage calculation...');
+      
       // Clear old opportunities first
       await storage.clearOldArbitrageOpportunities();
 
-      const coins = ['BTC', 'ETH', 'ADA', 'SOL', 'DOT'];
+      const coins = ['BTC', 'ETH', 'ADA', 'SOL', 'DOT', 'LINK', 'XRP', 'ATOM'];
       const exchanges = ['Kraken', 'Coinbase', 'Binance', 'Gemini'];
+      
+      let totalOpportunities = 0;
       
       for (const coin of coins) {
         // Get all available prices for this coin
@@ -179,9 +187,14 @@ class ExchangeService {
           }
         }
 
+        console.log(`${coin} prices:`, prices);
+
         // Generate all possible arbitrage pairs
         const availableExchanges = Object.keys(prices);
-        if (availableExchanges.length < 2) continue;
+        if (availableExchanges.length < 2) {
+          console.log(`Not enough exchanges for ${coin} - only have: ${availableExchanges.join(', ')}`);
+          continue;
+        }
 
         for (let i = 0; i < availableExchanges.length; i++) {
           for (let j = i + 1; j < availableExchanges.length; j++) {
@@ -211,19 +224,28 @@ class ExchangeService {
             for (const opportunity of spreads) {
               // Only save opportunities with spread >= 0.1%
               if (opportunity.spread >= 0.1) {
-                await storage.createArbitrageOpportunity({
-                  coin,
-                  buyExchange: opportunity.buyExchange,
-                  buyPrice: opportunity.buyPrice.toString(),
-                  sellExchange: opportunity.sellExchange,
-                  sellPrice: opportunity.sellPrice.toString(),
-                  spread: opportunity.spread.toFixed(4),
-                });
+                try {
+                  const result = await storage.createArbitrageOpportunity({
+                    coin,
+                    buyExchange: opportunity.buyExchange,
+                    buyPrice: opportunity.buyPrice.toString(),
+                    sellExchange: opportunity.sellExchange,
+                    sellPrice: opportunity.sellPrice.toString(),
+                    spread: opportunity.spread.toFixed(4),
+                  });
+                  
+                  console.log(`Created arbitrage opportunity: ${coin} ${opportunity.spread.toFixed(2)}% (Buy ${opportunity.buyExchange} @ $${opportunity.buyPrice}, Sell ${opportunity.sellExchange} @ $${opportunity.sellPrice})`);
+                  totalOpportunities++;
+                } catch (error) {
+                  console.error(`Error creating arbitrage opportunity for ${coin}:`, error);
+                }
               }
             }
           }
         }
       }
+      
+      console.log(`Total arbitrage opportunities created: ${totalOpportunities}`);
     } catch (error) {
       console.error('Error calculating arbitrage opportunities:', error);
       throw error;
@@ -232,8 +254,6 @@ class ExchangeService {
 
   async fetchBinancePrices(): Promise<void> {
     try {
-      const symbols = Object.values(this.COIN_PAIRS).map(p => p.binance).filter(Boolean);
-      
       for (const [coin, pairs] of Object.entries(this.COIN_PAIRS)) {
         if (!pairs.binance) continue;
         
@@ -250,6 +270,8 @@ class ExchangeService {
             coin,
             price: price.toString(),
           });
+          
+          console.log(`Binance ${coin}: $${price}`);
         }
       }
     } catch (error) {
@@ -278,6 +300,8 @@ class ExchangeService {
             coin,
             price: price.toString(),
           });
+          
+          console.log(`Gemini ${coin}: $${price}`);
         }
       }
     } catch (error) {
@@ -288,6 +312,8 @@ class ExchangeService {
 
   async updateAllPrices(): Promise<void> {
     try {
+      console.log('Starting price update cycle...');
+      
       // Fetch prices from all exchanges concurrently
       await Promise.all([
         this.fetchKrakenPrices(),
@@ -298,6 +324,8 @@ class ExchangeService {
 
       // Calculate arbitrage opportunities
       await this.calculateArbitrageOpportunities();
+      
+      console.log('Price update cycle completed');
     } catch (error) {
       console.error('Error updating prices:', error);
       throw error;

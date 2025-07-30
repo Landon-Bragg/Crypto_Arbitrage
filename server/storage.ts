@@ -1,7 +1,7 @@
 import { type ArbitrageOpportunity, type InsertArbitrageOpportunity, type ExchangePrice, type InsertExchangePrice, type User, type InsertUser, arbitrageOpportunities, exchangePrices, users } from "@shared/schema";
 import { randomUUID } from "crypto";
 import { db } from "./db";
-import { eq, and, desc, gte, lt } from "drizzle-orm";
+import { eq, and, desc, gte, lt, sql } from "drizzle-orm";
 
 export interface IStorage {
   // Arbitrage opportunities
@@ -19,7 +19,6 @@ export interface IStorage {
   getUserByUsername(username: string): Promise<User | undefined>;
   getUserByEmail(email: string): Promise<User | undefined>;
   createUser(insertUser: InsertUser): Promise<User>;
-  // Removed updateUserStripeInfo and updateUserPremiumStatus
 }
 
 // Database storage implementation
@@ -127,8 +126,6 @@ export class DatabaseStorage implements IStorage {
       .returning();
     return user;
   }
-
-  // Removed updateUserStripeInfo and updateUserPremiumStatus
 }
 
 export const storage = new DatabaseStorage();
