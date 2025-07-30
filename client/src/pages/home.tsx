@@ -7,6 +7,7 @@ import { LivePrices } from "@/components/live-prices";
 import { ArbitrageOpportunity, Statistics } from "@shared/schema";
 import { ChartLine } from "lucide-react";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import Footer from "@/components/footer"; 
 
 export default function Home() {
   const [selectedCoin, setSelectedCoin] = useState<string>("all");
@@ -162,6 +163,7 @@ export default function Home() {
         message={alertMessage}
         onClose={() => setShowAlert(false)}
       />
+      <Footer />
     </div>
   );
 }
