@@ -5,7 +5,6 @@ interface User {
   id: number;
   username: string;
   email: string;
-  isPremium: boolean;
 }
 
 interface AuthContextType {

@@ -12,18 +12,18 @@ export interface AuthRequest extends Request {
     id: number;
     username: string;
     email: string;
-    isPremium: boolean;
+    // Removed isPremium
   };
 }
 
 // Create JWT token
-export function createToken(user: { id: number; username: string; email: string; isPremium: boolean }): string {
+export function createToken(user: { id: number; username: string; email: string }): string {
   return jwt.sign(
     { 
       id: user.id, 
       username: user.username, 
-      email: user.email, 
-      isPremium: user.isPremium 
+      email: user.email
+      // Removed isPremium
     },
     JWT_SECRET,
     { expiresIn: '7d' }
@@ -75,31 +75,12 @@ export async function comparePassword(password: string, hash: string): Promise<b
   return bcrypt.compare(password, hash);
 }
 
-// Rate limiting for free users
-export const freeUserRateLimit = rateLimit({
+// Rate limiting for all users (single policy)
+export const userRateLimit = rateLimit({
   windowMs: 60 * 1000, // 1 minute
-  max: 4, // 4 requests per minute for free users
-  message: { message: 'Rate limit exceeded. Upgrade to premium for faster updates.' },
-  standardHeaders: true,
-  legacyHeaders: false,
-  trustProxy: true,
-});
-
-// Rate limiting for premium users
-export const premiumUserRateLimit = rateLimit({
-  windowMs: 60 * 1000, // 1 minute
-  max: 20, // 20 requests per minute for premium users
+  max: 4, // 4 requests per minute for all users
   message: { message: 'Rate limit exceeded. Please wait before making more requests.' },
   standardHeaders: true,
   legacyHeaders: false,
   trustProxy: true,
 });
-
-// Dynamic rate limiting based on user status
-export function dynamicRateLimit(req: AuthRequest, res: Response, next: NextFunction) {
-  if (req.user?.isPremium) {
-    premiumUserRateLimit(req, res, next);
-  } else {
-    freeUserRateLimit(req, res, next);
-  }
-}

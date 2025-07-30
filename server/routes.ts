@@ -45,7 +45,6 @@ export async function registerRoutes(app: Express): Promise<Server> {
         id: newUser.id,
         username: newUser.username,
         email: newUser.email,
-        isPremium: newUser.isPremium,
       });
 
       res.status(201).json({ 
@@ -55,7 +54,6 @@ export async function registerRoutes(app: Express): Promise<Server> {
           id: newUser.id,
           username: newUser.username,
           email: newUser.email,
-          isPremium: newUser.isPremium,
         }
       });
     } catch (error) {
@@ -82,7 +80,6 @@ export async function registerRoutes(app: Express): Promise<Server> {
         id: user.id,
         username: user.username,
         email: user.email,
-        isPremium: user.isPremium,
       });
 
       res.json({ 
@@ -92,7 +89,6 @@ export async function registerRoutes(app: Express): Promise<Server> {
           id: user.id,
           username: user.username,
           email: user.email,
-          isPremium: user.isPremium,
         }
       });
     } catch (error) {
@@ -112,7 +108,6 @@ export async function registerRoutes(app: Express): Promise<Server> {
         id: user.id,
         username: user.username,
         email: user.email,
-        isPremium: user.isPremium,
       });
     } catch (error) {
       console.error("Get user error:", error);
@@ -195,10 +190,10 @@ export async function registerRoutes(app: Express): Promise<Server> {
     // Initial update
     exchangeService.updateAllPrices().catch(console.error);
     
-    // Update every 15 seconds
+    // Update every 5 seconds
     setInterval(() => {
       exchangeService.updateAllPrices().catch(console.error);
-    }, 15000);
+    }, 5000);
   };
 
   // Start the periodic updates

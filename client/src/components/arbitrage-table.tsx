@@ -21,26 +21,17 @@ export function ArbitrageTable({
   autoRefreshEnabled,
   onToggleAutoRefresh,
 }: ArbitrageTableProps) {
-  const [minSpread, setMinSpread] = useState(0.1);
-
-  // Deduplicate and sort only once when opportunities change
-  const uniqueOpportunities = useMemo(() => {
-    return Object.values(
-      opportunities.reduce<Record<string, ArbitrageOpportunity>>((acc, opp) => {
-        const key = `${opp.coin}_${opp.buyExchange}_${opp.sellExchange}`;
-        if (!acc[key] || new Date(opp.timestamp) > new Date(acc[key].timestamp)) {
-          acc[key] = opp;
-        }
-        return acc;
-      }, {})
-    ).sort((a, b) => parseFloat(b.spread) - parseFloat(a.spread)); // Descending
-  }, [opportunities]);
-
-  // Always enforce minimum spread of 0.1%
-  const filteredOpportunities = useMemo(() => {
-    const effectiveMinSpread = Math.max(minSpread, 0.1);
-    return uniqueOpportunities.filter(opp => parseFloat(opp.spread) >= effectiveMinSpread);
-  }, [uniqueOpportunities, minSpread]);
+  // Deduplicate opportunities by coin, buyExchange, sellExchange
+  const uniqueOpportunities = Object.values(
+    opportunities.reduce<Record<string, ArbitrageOpportunity>>((acc, opp) => {
+      const key = `${opp.coin}_${opp.buyExchange}_${opp.sellExchange}`;
+      // Keep the latest opportunity by timestamp
+      if (!acc[key] || new Date(opp.timestamp) > new Date(acc[key].timestamp)) {
+        acc[key] = opp;
+      }
+      return acc;
+    }, {})
+  );
 
   const getCoinIcon = (coin: string) => {
     switch (coin) {
@@ -140,6 +131,7 @@ export function ArbitrageTable({
           </div>
         </div>
       </CardHeader>
+
       <CardContent className="p-0">
         <div className="overflow-x-auto">
           <Table>
@@ -155,14 +147,14 @@ export function ArbitrageTable({
               </TableRow>
             </TableHeader>
             <TableBody>
-              {filteredOpportunities.length === 0 ? (
+              {uniqueOpportunities.length === 0 ? (
                 <TableRow>
-                  <TableCell colSpan={7} className="text-center py-8 text-slate-400">
+                  <TableCell colSpan={8} className="text-center py-8 text-slate-400">
                     {isLoading ? "Loading opportunities..." : "No arbitrage opportunities found"}
                   </TableCell>
                 </TableRow>
               ) : (
-                filteredOpportunities.map((opportunity) => (
+                uniqueOpportunities.map((opportunity) => (
                   <TableRow 
                     key={opportunity.id} 
                     className="border-slate-700 hover:bg-slate-800 transition-colors"
@@ -215,18 +207,9 @@ export function ArbitrageTable({
 
         {/* Table Footer */}
         <div className="px-6 py-4 border-t border-slate-700 flex items-center justify-between">
-          <div className="flex items-center space-x-2">
-            <span className="text-sm text-slate-400">Minimum Spread %:</span>
-            <input
-              type="number"
-              step="0.01"
-              min="0"
-              value={minSpread}
-              onChange={e => setMinSpread(Number(e.target.value))}
-              className="bg-slate-700 text-white px-2 py-1 rounded w-20"
-            />
+          <div className="text-sm text-slate-400">
+            Showing all opportunities
           </div>
-          
           <div className="flex items-center space-x-2">
             <span className="text-sm text-slate-400">Auto-refresh:</span>
             <Button

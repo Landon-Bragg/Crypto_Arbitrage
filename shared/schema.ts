@@ -30,9 +30,7 @@ export const users = pgTable("users", {
   username: varchar("username", { length: 255 }).notNull().unique(),
   email: varchar("email", { length: 255 }).notNull().unique(),
   passwordHash: varchar("password_hash", { length: 255 }).notNull(),
-  isPremium: boolean("is_premium").default(false).notNull(),
-  stripeCustomerId: varchar("stripe_customer_id", { length: 255 }),
-  stripeSubscriptionId: varchar("stripe_subscription_id", { length: 255 }),
+  // Removed isPremium and Stripe fields
   lastApiCall: timestamp("last_api_call"),
   createdAt: timestamp("created_at").defaultNow().notNull(),
   updatedAt: timestamp("updated_at").defaultNow().notNull(),

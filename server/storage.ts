@@ -19,8 +19,7 @@ export interface IStorage {
   getUserByUsername(username: string): Promise<User | undefined>;
   getUserByEmail(email: string): Promise<User | undefined>;
   createUser(insertUser: InsertUser): Promise<User>;
-  updateUserStripeInfo(id: number, stripeCustomerId: string, stripeSubscriptionId: string): Promise<User>;
-  updateUserPremiumStatus(id: number, isPremium: boolean): Promise<User>;
+  // Removed updateUserStripeInfo and updateUserPremiumStatus
 }
 
 // Database storage implementation
@@ -45,27 +44,27 @@ export class DatabaseStorage implements IStorage {
   }
 
   async createArbitrageOpportunity(insertOpportunity: InsertArbitrageOpportunity): Promise<ArbitrageOpportunity> {
-  // Using raw SQL for proper upsert with ON CONFLICT
-  const [opportunity] = await db
-    .insert(arbitrageOpportunities)
-    .values(insertOpportunity)
-    .onConflictDoUpdate({
-      target: [
-        arbitrageOpportunities.coin,
-        arbitrageOpportunities.buyExchange,
-        arbitrageOpportunities.sellExchange
-      ],
-      set: {
-        buyPrice: insertOpportunity.buyPrice,
-        sellPrice: insertOpportunity.sellPrice,
-        spread: insertOpportunity.spread,
-        timestamp: sql`now()`,
-      },
-    })
-    .returning();
-  
-  return opportunity;
-}
+    // Using raw SQL for proper upsert with ON CONFLICT
+    const [opportunity] = await db
+      .insert(arbitrageOpportunities)
+      .values(insertOpportunity)
+      .onConflictDoUpdate({
+        target: [
+          arbitrageOpportunities.coin,
+          arbitrageOpportunities.buyExchange,
+          arbitrageOpportunities.sellExchange
+        ],
+        set: {
+          buyPrice: insertOpportunity.buyPrice,
+          sellPrice: insertOpportunity.sellPrice,
+          spread: insertOpportunity.spread,
+          timestamp: sql`now()`,
+        },
+      })
+      .returning();
+    
+    return opportunity;
+  }
 
   async clearOldArbitrageOpportunities(): Promise<void> {
     const fiveMinutesAgo = new Date(Date.now() - 5 * 60 * 1000);
@@ -129,31 +128,7 @@ export class DatabaseStorage implements IStorage {
     return user;
   }
 
-  async updateUserStripeInfo(id: number, stripeCustomerId: string, stripeSubscriptionId: string): Promise<User> {
-    const [user] = await db
-      .update(users)
-      .set({ 
-        stripeCustomerId, 
-        stripeSubscriptionId, 
-        isPremium: true,
-        updatedAt: new Date()
-      })
-      .where(eq(users.id, id))
-      .returning();
-    return user;
-  }
-
-  async updateUserPremiumStatus(id: number, isPremium: boolean): Promise<User> {
-    const [user] = await db
-      .update(users)
-      .set({ 
-        isPremium,
-        updatedAt: new Date()
-      })
-      .where(eq(users.id, id))
-      .returning();
-    return user;
-  }
+  // Removed updateUserStripeInfo and updateUserPremiumStatus
 }
 
 export const storage = new DatabaseStorage();

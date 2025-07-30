@@ -19,7 +19,7 @@ export default function Home() {
   const [showAlert, setShowAlert] = useState<boolean>(false);
   const [alertMessage, setAlertMessage] = useState<string>("");
   const [lastUpdateTime, setLastUpdateTime] = useState<string>("");
-  
+
   // Query for arbitrage opportunities
   const {
     data: opportunities = [],
@@ -38,7 +38,7 @@ export default function Home() {
       }
       return response.json();
     },
-    refetchInterval: autoRefreshEnabled ? (user?.isPremium ? 5000 : 15000) : false,
+    refetchInterval: autoRefreshEnabled ? 5000 : false, // Always 5 seconds
   });
 
   // Query for statistics
@@ -51,7 +51,7 @@ export default function Home() {
       }
       return response.json();
     },
-    refetchInterval: autoRefreshEnabled ? (user?.isPremium ? 5000 : 15000) : false,
+    refetchInterval: autoRefreshEnabled ? 5000 : false, // Always 5 seconds
   });
 
   // Update last update time
@@ -67,7 +67,6 @@ export default function Home() {
       const highValueOpportunity = opportunities.find(
         op => parseFloat(op.spread) >= 2.0
       );
-      
       if (highValueOpportunity) {
         const message = `${highValueOpportunity.coin} spread of ${parseFloat(highValueOpportunity.spread).toFixed(2)}% between ${highValueOpportunity.buyExchange} and ${highValueOpportunity.sellExchange}`;
         setAlertMessage(message);
@@ -78,9 +77,7 @@ export default function Home() {
 
   const handleManualRefresh = async () => {
     try {
-      // Trigger price update on backend
       await fetch("/api/update-prices", { method: "POST" });
-      // Refetch opportunities
       await refetchOpportunities();
     } catch (error) {
       console.error("Failed to refresh data:", error);
@@ -102,18 +99,11 @@ export default function Home() {
             <span className="text-xs bg-emerald-500 text-white px-2 py-1 rounded-full">
               LIVE
             </span>
-            {user?.isPremium && (
-              <span className="text-xs bg-yellow-500 text-black px-2 py-1 rounded-full font-medium">
-                PREMIUM
-              </span>
-            )}
           </div>
-          
           <div className="flex items-center space-x-4">
             <div className="text-sm text-slate-400">
               Last Update: <span className="text-slate-300">{lastUpdateTime}</span>
             </div>
-            
             <div className="flex items-center space-x-2">
               <div className={`w-2 h-2 rounded-full ${
                 isLoadingOpportunities 
@@ -122,7 +112,6 @@ export default function Home() {
               }`} />
               <span className="text-sm text-slate-300">{connectionStatus}</span>
             </div>
-
             <UserMenu />
           </div>
         </div>
@@ -145,7 +134,6 @@ export default function Home() {
               onRefresh={handleManualRefresh}
             />
           </div>
-
           {/* Main Content Area */}
           <div className="lg:col-span-3">
             <Tabs defaultValue="opportunities" className="w-full">
@@ -157,7 +145,6 @@ export default function Home() {
                   Live Exchange Prices
                 </TabsTrigger>
               </TabsList>
-              
               <TabsContent value="opportunities" className="mt-6">
                 <ArbitrageTable
                   opportunities={opportunities}
@@ -166,7 +153,6 @@ export default function Home() {
                   onToggleAutoRefresh={() => setAutoRefreshEnabled(!autoRefreshEnabled)}
                 />
               </TabsContent>
-              
               <TabsContent value="prices" className="mt-6">
                 <LivePrices />
               </TabsContent>
@@ -174,7 +160,6 @@ export default function Home() {
           </div>
         </div>
       </div>
-
       {/* Alert Notification */}
       <AlertNotification
         show={showAlert}

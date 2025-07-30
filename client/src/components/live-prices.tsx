@@ -15,7 +15,7 @@ export function LivePrices() {
       }
       return response.json();
     },
-    refetchInterval: 15000,
+    refetchInterval: 5000, // 5 seconds
   });
 
   const getCoinIcon = (coin: string) => {
