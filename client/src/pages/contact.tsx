@@ -44,9 +44,9 @@ export default function Contact() {
                   <Button 
                     variant="link" 
                     className="p-0 h-auto text-blue-400 hover:text-blue-300"
-                    onClick={() => window.location.href = 'mailto:hello@cryptoarbitrage.app'}
+                    onClick={() => window.location.href = 'mailto:support@cryptoarbitrage.app'}
                   >
-                    hello@cryptoarbitrage.app
+                    support@cryptoarbitrage.app
                   </Button>
                 </div>
               </div>
@@ -61,7 +61,7 @@ export default function Contact() {
                     className="p-0 h-auto text-purple-400 hover:text-purple-300"
                     onClick={() => window.location.href = 'mailto:bugs@cryptoarbitrage.app'}
                   >
-                    bugs@cryptoarbitrage.app
+                    support@cryptoarbitrage.app
                   </Button>
                 </div>
               </div>
