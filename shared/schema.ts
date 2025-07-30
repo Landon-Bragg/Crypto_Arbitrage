@@ -13,7 +13,7 @@ export const arbitrageOpportunities = pgTable("arbitrage_opportunities", {
   spread: decimal("spread", { precision: 10, scale: 4 }).notNull(),
   timestamp: timestamp("timestamp").defaultNow().notNull(),
 }, (table) => ({
-  // Unique constraint to prevent duplicates for the same coin/exchange combination
+  // prevent duplicates for the same coin/exchange combination
   uniqueOpportunity: unique("unique_coin_buy_sell").on(table.coin, table.buyExchange, table.sellExchange),
 }));
 
@@ -30,7 +30,6 @@ export const users = pgTable("users", {
   username: varchar("username", { length: 255 }).notNull().unique(),
   email: varchar("email", { length: 255 }).notNull().unique(),
   passwordHash: varchar("password_hash", { length: 255 }).notNull(),
-  // Removed isPremium and Stripe fields
   lastApiCall: timestamp("last_api_call"),
   createdAt: timestamp("created_at").defaultNow().notNull(),
   updatedAt: timestamp("updated_at").defaultNow().notNull(),

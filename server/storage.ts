@@ -13,7 +13,6 @@ export interface IStorage {
   getLatestExchangePrices(): Promise<ExchangePrice[]>;
   createExchangePrice(price: InsertExchangePrice): Promise<ExchangePrice>;
   getExchangePrice(exchange: string, coin: string): Promise<ExchangePrice | undefined>;
-  // Removed user management functions
 }
 
 // Database storage implementation
@@ -38,8 +37,7 @@ export class DatabaseStorage implements IStorage {
   }
 
   async createArbitrageOpportunity(insertOpportunity: InsertArbitrageOpportunity): Promise<ArbitrageOpportunity> {
-    // First, try to delete any existing opportunity with the same coin/exchange combination
-    // This handles the "upsert" behavior without relying on database constraints
+
     try {
       await db
         .delete(arbitrageOpportunities)
@@ -49,11 +47,9 @@ export class DatabaseStorage implements IStorage {
           eq(arbitrageOpportunities.sellExchange, insertOpportunity.sellExchange)
         ));
     } catch (error) {
-      // Ignore delete errors - the record might not exist
       console.log(`No existing opportunity to delete for ${insertOpportunity.coin} ${insertOpportunity.buyExchange}->${insertOpportunity.sellExchange}`);
     }
 
-    // Now insert the new opportunity
     const [opportunity] = await db
       .insert(arbitrageOpportunities)
       .values(insertOpportunity)
@@ -75,7 +71,6 @@ export class DatabaseStorage implements IStorage {
   }
 
   async createExchangePrice(insertPrice: InsertExchangePrice): Promise<ExchangePrice> {
-    // Delete existing price for this exchange-coin pair first
     await db
       .delete(exchangePrices)
       .where(and(

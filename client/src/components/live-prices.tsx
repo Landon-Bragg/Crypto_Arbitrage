@@ -96,9 +96,9 @@ export function LivePrices() {
     });
   };
 
-  // Group prices by coin, filter out MATIC
+  // Group prices by coin
   const pricesByCoin = prices.reduce((acc, price) => {
-    if (price.coin === "MATIC") return acc; // Filter out MATIC
+    if (price.coin === "MATIC") return acc; 
     if (!acc[price.coin]) {
       acc[price.coin] = [];
     }

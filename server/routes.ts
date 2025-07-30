@@ -6,7 +6,6 @@ import { filterArbitrageSchema } from "@shared/schema";
 import { z } from "zod";
 
 export async function registerRoutes(app: Express): Promise<Server> {
-  // Get arbitrage opportunities with optional filtering and dynamic rate limit
   app.get("/api/arbitrage", async (req, res) => {
     try {
       const { coin = "all", minSpread } = req.query;
@@ -28,7 +27,6 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
-  // Get latest exchange prices (removed auth middleware)
   app.get("/api/prices", async (req, res) => {
     try {
       const prices = await storage.getLatestExchangePrices();
