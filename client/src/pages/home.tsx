@@ -11,7 +11,6 @@ import Footer from "@/components/footer";
 export default function Home() {
   const [selectedCoin, setSelectedCoin] = useState<string>("all");
   const [minSpread, setMinSpread] = useState<number>(0.1);
-  const [alertsEnabled, setAlertsEnabled] = useState<boolean>(true);
   const [autoRefreshEnabled, setAutoRefreshEnabled] = useState<boolean>(true);
   const [lastUpdateTime, setLastUpdateTime] = useState<string>("");
 
@@ -105,12 +104,10 @@ export default function Home() {
             <FilterSidebar
               selectedCoin={selectedCoin}
               minSpread={minSpread}
-              alertsEnabled={alertsEnabled}
               statistics={statistics || { activeOpportunities: 0, highestSpread: 0 }}
               isRefreshing={isLoadingOpportunities}
               onCoinChange={setSelectedCoin}
               onSpreadChange={setMinSpread}
-              onAlertsToggle={setAlertsEnabled}
               onRefresh={handleManualRefresh}
             />
           </div>

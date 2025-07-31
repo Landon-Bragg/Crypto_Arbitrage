@@ -10,24 +10,20 @@ import { Statistics } from "@shared/schema";
 interface FilterSidebarProps {
   selectedCoin: string;
   minSpread: number;
-  alertsEnabled: boolean;
   statistics: Statistics;
   isRefreshing: boolean;
   onCoinChange: (coin: string) => void;
   onSpreadChange: (spread: number) => void;
-  onAlertsToggle: (enabled: boolean) => void;
   onRefresh: () => void;
 }
 
 export function FilterSidebar({
   selectedCoin,
   minSpread,
-  alertsEnabled,
   statistics,
   isRefreshing,
   onCoinChange,
   onSpreadChange,
-  onAlertsToggle,
   onRefresh,
 }: FilterSidebarProps) {
   return (
@@ -121,22 +117,6 @@ export function FilterSidebar({
             </div>
           </div>
 
-          {/* Alert Settings */}
-          <div>
-            <Label className="text-sm font-medium text-slate-300 mb-2 block">
-              Alert Settings
-            </Label>
-            <div className="flex items-center space-x-2">
-              <Checkbox
-                id="alerts"
-                checked={alertsEnabled}
-                onCheckedChange={onAlertsToggle}
-                className="border-slate-600 text-emerald-500"
-              />
-              <Label htmlFor="alerts" className="text-sm text-slate-300">Enable alerts</Label>
-            </div>
-          </div>
-
           {/* Refresh Control */}
           <Button
             onClick={onRefresh}
@@ -167,13 +147,6 @@ export function FilterSidebar({
               <span className="text-slate-400">Highest Spread:</span>
               <span className="text-emerald-400 font-semibold">
                 {statistics.highestSpread.toFixed(2)}%
-              </span>
-            </div>
-            
-            <div className="flex justify-between">
-              <span className="text-slate-400">Last Alert:</span>
-              <span className="text-slate-300">
-                {statistics.lastAlertTime || 'None'}
               </span>
             </div>
           </div>

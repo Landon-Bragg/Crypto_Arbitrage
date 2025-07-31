@@ -30,7 +30,6 @@ This is a cryptocurrency arbitrage monitoring application built with React front
 - **Arbitrage Table**: Displays opportunities with coin icons, exchange badges, pricing data, and spread percentages for all supported currencies
 - **Live Prices Panel**: Real-time display of current prices from all exchanges, grouped by cryptocurrency with spread calculations
 - **Filter Sidebar**: Provides filtering by cryptocurrency type (BTC, ETH, ADA, SOL, DOT) and minimum spread threshold
-- **Alert System**: Real-time notifications for new arbitrage opportunities above configured thresholds
 - **Auto-refresh**: Automatic data refreshing every 5 seconds
 
 ### Data Models

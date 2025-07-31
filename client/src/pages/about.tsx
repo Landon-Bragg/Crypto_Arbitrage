@@ -34,16 +34,6 @@ export default function About() {
                 </p>
               </div>
               
-              <div className="space-y-4">
-                <div className="flex items-center space-x-3">
-                  <Zap className="h-6 w-6 text-yellow-500" />
-                  <h3 className="text-lg font-semibold text-white">Instant Alerts</h3>
-                </div>
-                <p className="text-sm">
-                  Get notified immediately when arbitrage opportunities exceed your 
-                  configured spread thresholds.
-                </p>
-              </div>
               
               <div className="space-y-4">
                 <div className="flex items-center space-x-3">
