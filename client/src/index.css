@@ -104,37 +104,3 @@
 .hover\:bg-slate-600:hover {
   background-color: hsl(215, 20%, 25%);
 }
-
-.bg-emerald-600 {
-  background-color: var(--emerald-600);
-}
-
-.hover\:bg-emerald-700:hover {
-  background-color: var(--emerald-700);
-}
-
-.text-emerald-400 {
-  color: hsl(158, 64%, 52%);
-}
-
-.hover\:text-emerald-300:hover {
-  color: hsl(158, 64%, 62%);
-}
-
-/* Animation for sliding in notifications */
-@keyframes slide-in-from-right-full {
-  from {
-    transform: translateX(100%);
-  }
-  to {
-    transform: translateX(0);
-  }
-}
-
-.animate-in {
-  animation-fill-mode: forwards;
-}
-
-.slide-in-from-right-full {
-  animation: slide-in-from-right-full 0.3s ease-out;
-}

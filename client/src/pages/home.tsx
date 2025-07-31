@@ -2,7 +2,6 @@ import { useState, useEffect } from "react";
 import { useQuery } from "@tanstack/react-query";
 import { ArbitrageTable } from "@/components/arbitrage-table";
 import { FilterSidebar } from "@/components/filter-sidebar";
-import { AlertNotification } from "@/components/alert-notification";
 import { LivePrices } from "@/components/live-prices";
 import { ArbitrageOpportunity, Statistics } from "@shared/schema";
 import { ChartLine } from "lucide-react";
@@ -14,8 +13,6 @@ export default function Home() {
   const [minSpread, setMinSpread] = useState<number>(0.1);
   const [alertsEnabled, setAlertsEnabled] = useState<boolean>(true);
   const [autoRefreshEnabled, setAutoRefreshEnabled] = useState<boolean>(true);
-  const [showAlert, setShowAlert] = useState<boolean>(false);
-  const [alertMessage, setAlertMessage] = useState<string>("");
   const [lastUpdateTime, setLastUpdateTime] = useState<string>("");
 
   // Query for arbitrage opportunities
@@ -58,20 +55,6 @@ export default function Home() {
       setLastUpdateTime(new Date().toLocaleTimeString());
     }
   }, [isLoadingOpportunities]);
-
-  // Check for new high-value opportunities to show alerts
-  useEffect(() => {
-    if (alertsEnabled && opportunities.length > 0) {
-      const highValueOpportunity = opportunities.find(
-        op => parseFloat(op.spread) >= 2.0
-      );
-      if (highValueOpportunity) {
-        const message = `${highValueOpportunity.coin} spread of ${parseFloat(highValueOpportunity.spread).toFixed(2)}% between ${highValueOpportunity.buyExchange} and ${highValueOpportunity.sellExchange}`;
-        setAlertMessage(message);
-        setShowAlert(true);
-      }
-    }
-  }, [opportunities, alertsEnabled]);
 
   const handleManualRefresh = async () => {
     try {
@@ -157,12 +140,6 @@ export default function Home() {
           </div>
         </div>
       </div>
-      {/* Alert Notification */}
-      <AlertNotification
-        show={showAlert}
-        message={alertMessage}
-        onClose={() => setShowAlert(false)}
-      />
       <Footer />
     </div>
   );
